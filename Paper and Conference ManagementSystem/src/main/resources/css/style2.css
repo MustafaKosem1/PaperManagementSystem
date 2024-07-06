@@ -1,0 +1,35 @@
+
+    .material-symbols-outlined {
+      font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24
+    }
+    body{
+        background-color: #f2f2f2;
+    }
+    .form-div{
+        padding: 3%;
+        background-color: #ffffff;
+    }
+    label{
+        font-weight:bold;
+        font-family: "Times New Roman";
+    }
+    legend{
+        font-family: "Times New Roman";
+        font-size: 16px;
+        font-weight:bold;
+    }
+    h4{
+        text-align: center;
+        font-weight:bold;
+        font-family: SFProDisplay-Bold, Helvetica, Arial, sans-serif;
+    }
+    textarea{
+        resize: none;
+    }
+    .inline-block{
+        display: inline-block;
+    }

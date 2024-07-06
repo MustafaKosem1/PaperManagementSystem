@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Değerlendirme Sayfası</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/style2.css">
+</head>
+<body>
+
+<div class="justify-content-center main-div">
+
+    <div th:replace="~{navbar.html}"></div>
+
+    <section class="py-5">
+        <div class="container">
+            <div class="row  justify-content-center">
+                <div class="card-group col-md-8 mt-4 ms-5">
+                    <div class="card">
+                        <div class="card-header bg-transparent">
+                            <h5 class="card-title fw-bolder mt-2"><dd th:text="${paper.title}"></dd></h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-4">Paper ID:</dt>
+                                <dd class="col-sm-8" th:text="${paper.id}"></dd>
+                                <hr>
+                                <dt class="col-sm-4">Paper Field:</dt>
+                                <dd class="col-sm-8" th:text="${paper.paper_field}"></dd>
+                                <hr>
+                                <dt class="col-sm-4">Paper State:</dt>
+                                <dd class="col-sm-8" th:text="${paper.state}"></dd>
+                                <hr>
+                                <dt class="col-sm-4">Keywords:</dt>
+                                <dd class="col-sm-8">
+                                <span th:each="keyword, iterStat : ${paper.keywords}">
+                                    <span name="Day" th:text="${keyword.keyword} + ( ${iterStat.last} ? '' : ', ' )">
+                                    </span>
+                                </span>
+                                </dd>
+                                <hr>
+                                <dt class="col-sm-4">Sources:</dt>
+                                <dd class="col-sm-8">
+                                <span th:each="source, iterStat : ${paper.sources}">
+                                    <span name="Day" th:text="${source.source} + ( ${iterStat.last} ? '' : ', ' )">
+                                    </span>
+                                </span>
+                                </dd>
+                                <hr>
+                                <dt class="col-sm-4">Files:</dt>
+                                <dd class="col-sm-8">
+                                    <span th:each="paper_file, status_2 : ${paper.paper_files}">
+                                        <a th:href="@{'/file/'+ ${paper_file.file_location}}" th:text="'Dosya_' + ${status_2.index} + ( ${status_2.last} ? '' : ', ' )" download>
+                                        </a>
+                                    </span>
+                                </dd>
+                                <hr>
+                                <dt class="mb-2">Assignment Details</dt>
+                                <hr>
+                                <dt class="col-sm-4">ID:</dt>
+                                <dd class="col-sm-8" th:text="${assignment.id}"></dd>
+
+                                <dt class="col-sm-4">State:</dt>
+                                <dd class="col-sm-8" th:text="${assignment.state}"></dd>
+
+                                <dt class="col-sm-4">Assign Date:</dt>
+                                <dd class="col-sm-8" th:text="${assignment.assignment_date}"></dd>
+
+                                <dt class="col-sm-4">Return Date:</dt>
+                                <dd class="col-sm-8" th:text="${assignment.return_date}"></dd>
+
+                                <dt class="col-sm-4">Result:</dt>
+                                <dd class="col-sm-8" th:text="${assignment.result}"></dd>
+
+                                <dt class="col-sm-4">Score:</dt>
+                                <dd class="col-sm-8" th:text="${assignment.score}"></dd>
+
+                                <dt class="col-sm-4">Feedback:</dt>
+                                <dd class="col-sm-8" th:text="${assignment.feedback}"></dd>
+
+                                <div th:if="${assignment.state eq 'İncele aşamasında.'}">
+                                    <hr>
+                                    <div th:text="${paper.summary}"></div>
+                                </div>
+
+                            </dl>
+                        </div>
+                        <div class="card-footer">
+                            <small>
+                                <strong >Upload Date:</strong>
+                                <span class="ms-5" th:text="${paper.upload_date}"></span>
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body" th:text="${paper.summary}" th:unless="${assignment.state eq 'İncele aşamasında.'}">
+                        </div>
+                        <div class="card-body" th:if="${assignment.state eq 'İncele aşamasında.'}">
+                            <div class="input-group justify-content-center container-sm form-div" >
+                                <div>
+                                    <h4>Paper Değerlendir</h4>
+                                </div>
+                                <form id="evaluationForm" th:action="@{/home/paper/evaluate/process}" th:object="${assignment}" method="POST" enctype="multipart/form-data">
+                                    <input type="hidden" th:field="*{id}" />
+                                    <div sec:authorize="isAuthenticated()" class="inline-block">
+                                        <span th:if="${#authentication.principal.username eq assignment.reviewer.mail}">
+                                            <label class="mt-2 mb-1" for="score">Paper puanını giriniz: </label>
+                                            <input type="number" class="form-control" id="score" th:field="*{score}" placeholder="Puanı girin" required>
+                                            <br>
+
+                                            <textarea id="description" class="form-control" th:field="*{feedback}" placeholder="Lütfen detaylı bir açıklama giriniz:" rows="25" cols="50" required maxlength="600"></textarea>
+
+                                            <br>
+
+                                            <div class="d-grid gap-2">
+                                                <button class="btn btn-success" type="submit" name="action" value="submit">Gönder</button>
+                                            </div>
+
+                                             <div class="d-grid gap-2 mt-3">
+                                                 <button class="btn btn-primary" type="submit" name="action" value="revision">Revizyon İste</button>
+                                            </div>
+
+                                        </span>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+</body>
+<script>
+    document.getElementById("evaluationForm").addEventListener("submit", function(event) {
+        var form = this;
+        var action = event.submitter.getAttribute('value');
+
+        if (action === 'revision') {
+            form.action = "/home/paper/revisionRequest"; // Revizyon eklemek için yönlendirilecek sayfa
+        } else {
+            form.action = "/home/paper/evaluate/process"; // Normal gönderim için işlem yapılan sayfa
+        }
+    });
+    document.getElementById('hesabim-button').addEventListener('click', function() {
+            alert("Bu kısım henüz implemente edilmedi.");
+    });
+</script>
+</html>
